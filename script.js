@@ -44,16 +44,19 @@ function operate(e, id = this.id){
 			!Array.isArray(a) ? a /= 100 : a = result.textContent.split("");
 		}
 		else{
-			operate(null, "equal");
+			a = Array.isArray(a) ? result.textContent = Math.round(operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",","")))*10**11)/10**11 : result.textContent = Math.round(operator(a, parseFloat(b.join().replaceAll(",","")))*10**11)/10**11;
+			b = [];
+			operator = null;
 			a /= 100;
 			result.textContent = a.toString();
+			console.log("operatornot null");
 		}
 	}
 	else if(id == "dot" && result.textContent.indexOf(".") == -1){
 		result.textContent = result.textContent + ".";
 		currentArray().push(".");
 	}
-	else if(id == "equal" && b.length > 0){
+	else if(id == "equal" && b.length > 0 && typeof operator === "function"){
 		if(parseFloat(b.join().replaceAll(",","")) == 0 && operator == operations.divide){
 			result.textContent = "Math ERROR";
 			a = []
@@ -62,8 +65,8 @@ function operate(e, id = this.id){
 		}
 		console.log(a);
 		console.log(b);
-		Array.isArray(a) ? result.textContent = Math.round(operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",","")))*10**11)/10**11 : Math.round(operator(a, parseFloat(b.join().replaceAll(",","")))*10**11)/10**11;
-		a = parseFloat(result.textContent);
+		console.log(operator);
+		a = Array.isArray(a) ? result.textContent = Math.round(operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",","")))*10**11)/10**11 : result.textContent = Math.round(operator(a, parseFloat(b.join().replaceAll(",","")))*10**11)/10**11;
 		b = [];
 		operator = null;
 	}
@@ -84,6 +87,8 @@ function currentArray(){
 }
 
 function highlight(e, id, turnOn){
+	let element = document.getElementById(id);
+	if(typeof element === "undefined" || element == null) return;
 	if(id != "equal"){
 		turnOn ? document.getElementById(id).classList.add("grey-highlight"): document.getElementById(id).classList.remove("grey-highlight");
 	}

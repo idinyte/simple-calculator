@@ -48,7 +48,7 @@ function operate(){
 		operator == null ? a.push("."): b.push(".");
 	}
 	else if(this.id == "equal" && b.length > 0){
-		Array.isArray(a) ? result.textContent = operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",",""))) : result.textContent = operator(a, parseFloat(b.join().replaceAll(",","")));
+		Array.isArray(a) ? result.textContent = Math.round(operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",","")))*100000)/100000 : result.textContent = Math.round(operator(a, parseFloat(b.join().replaceAll(",","")))*100000)/100000;
 		a = parseFloat(result.textContent);
 		b = [];
 	}

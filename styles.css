@@ -48,7 +48,7 @@ body, .buttons{
     border-color: var(--darkGray);
 }
 
-.buttons:hover{
+.buttons:active{
     background-color: var(--highlight);
 }
 
@@ -57,7 +57,7 @@ body, .buttons{
     background-color: var(--green);
 }
 
-#equal:hover{
+#equal:active{
     background-color: var(--greenHighlight);
 }
 

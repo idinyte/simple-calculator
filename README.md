@@ -1,1 +1,0 @@
-A simple calculator. This is a project made for learning purposes from the material taught in [The Odin Project](https://www.theodinproject.com). Checkoutthe calculator [here!](https://idinyte.github.io/simple-calculator/).

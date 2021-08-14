@@ -7,13 +7,15 @@ let numbers = {"zero":0,"one":1, "two":2, "three":3, "four":4, "five":5, "six":6
 let keycodes ={96:"zero",97:"one", 98:"two", 99:"three", 100:"four", 101:"five", 102:"six", 103:"seven",104:"eight", 105:"nine", 107:"add", 109:"substract", 106:"multiply", 111:"divide", 110:"dot", 46:"clear", 8:"backspace", 13:"equal"}
 
 let buttons = document.querySelectorAll(".buttons");
-buttons.forEach(button => button.addEventListener("click", operate));
+buttons.forEach(button => button.addEventListener("mousedown", operate));
 
 //keypad support
 document.addEventListener("keydown", function(e){operate(e, keycodes[e.keyCode])});
 //button highlight on keypad press
 document.addEventListener("keydown", function(e){highlight(e, keycodes[e.keyCode], true)});
 document.addEventListener("keyup", function(e){highlight(e, keycodes[e.keyCode], false)});
+//fixes keypad clashing with browser's shortcuts
+document.onkeydown = function (e) {	return false;}
 
 function operate(e, id = this.id){
 	if(id in numbers){
@@ -21,54 +23,37 @@ function operate(e, id = this.id){
 		result.textContent = currentArray().join().replaceAll(",","");
 	}
 	else if(id in operations && (a.length > 0 || typeof a === "number")){
-		 operator = operations[id];
-		 console.log("poop");
+		console.log(a);
+		console.log(b);
+		if(b.length > 0) operate(null, "equal");
+		operator = operations[id];
 	}
 	else if(id == "change-sign"){
-		if(result.textContent.indexOf("-") == 0)
-		{
-			result.textContent = result.textContent.slice(1);
-			if(!Array.isArray(a)) a *= -1;
-			else currentArray().shift("-");
-		}
-		else 
-		{ 
-			result.textContent = "-"+result.textContent;
-			if(!Array.isArray(a)) a *= -1;
-			else currentArray().unshift("-");
-		}
+		result.textContent.indexOf("-") == 0 ? currentArray().shift("-"): currentArray().unshift("-");
+		result.textContent = currentArray().join().replaceAll(",","");
 	}
 	else if(id == "percentage" && parseFloat(result.textContent) != 0){
-		if(operator==null){
-			result.textContent = (Math.round(10**9*(parseFloat(result.textContent)))/10**11).toString();
-			!Array.isArray(a) ? a /= 100 : a = result.textContent.split("");
-		}
-		else{
-			a = Array.isArray(a) ? result.textContent = Math.round(operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",","")))*10**11)/10**11 : result.textContent = Math.round(operator(a, parseFloat(b.join().replaceAll(",","")))*10**11)/10**11;
-			b = [];
-			operator = null;
-			a /= 100;
-			result.textContent = a.toString();
-			console.log("operatornot null");
-		}
+		if(operator != null) {operate(null, "equal");}
+		result.textContent = (Math.round(10**9*(parseFloat(result.textContent)))/10**11).toString();
+		a = result.textContent.split("");
 	}
 	else if(id == "dot" && result.textContent.indexOf(".") == -1){
 		result.textContent = result.textContent + ".";
 		currentArray().push(".");
 	}
 	else if(id == "equal" && b.length > 0 && typeof operator === "function"){
-		if(parseFloat(b.join().replaceAll(",","")) == 0 && operator == operations.divide){
+		console.log(a);
+		console.log(b);
+		if(parseFloat(b.join().replaceAll(",","")) == 0 && operator == operations.divide){ //check division by 0
+			operate(null, "clear");
 			result.textContent = "Math ERROR";
-			a = []
+		}
+		else{
+			result.textContent = (Math.round(operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",","")))*10**11)/10**11).toString();
+			a = result.textContent.split("");
 			b = [];
 			operator = null;
 		}
-		console.log(a);
-		console.log(b);
-		console.log(operator);
-		a = Array.isArray(a) ? result.textContent = Math.round(operator(parseFloat(a.join().replaceAll(",","")), parseFloat(b.join().replaceAll(",","")))*10**11)/10**11 : result.textContent = Math.round(operator(a, parseFloat(b.join().replaceAll(",","")))*10**11)/10**11;
-		b = [];
-		operator = null;
 	}
 	else if(id == "clear"){
 		result.textContent = "0";
@@ -82,9 +67,7 @@ function operate(e, id = this.id){
 	}
 }
 
-function currentArray(){
-	return operator == null && Array.isArray(a) ?  a: b;
-}
+function currentArray(){ return a.length > 0 && operator != null ? b: a; }
 
 function highlight(e, id, turnOn){
 	let element = document.getElementById(id);
